@@ -2,13 +2,14 @@
   "name": "aws-cognito-nextjs",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "next": "12.0.3",
+    "pusher-js": "^7.0.3",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
