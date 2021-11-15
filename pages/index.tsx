@@ -11,10 +11,7 @@ export type Message = {
 };
 
 const Home: NextPage = () => {
-  const pusher = new Pusher(`${NEXT_PUBLIC_PUSHER_KEY}`, {
-    cluster: NEXT_PUBLIC_PUSHER_CLUSTER,
-  });
-  const [pusherMessages, setPusherMessages] = useState<Message[]>([]);
+  const [pusherMessages, setPusherMessages] = useState<Message[]>([{ message: 'dummy', id: 'adsmdas11e2e1e3' }]);
   const [formInput, setFormInput] = useState<Message>({ message: '', id: genRandom().makeid(20) });
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
@@ -43,24 +40,26 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
+    const pusher = new Pusher(`${NEXT_PUBLIC_PUSHER_KEY}`, {
+      cluster: NEXT_PUBLIC_PUSHER_CLUSTER,
+    });
+    const channelName = 'boar-coder-bingo';
     if (process.env.NODE_ENV !== 'production') {
       Pusher.logToConsole = true;
     }
 
-    var channel = pusher.subscribe('boar-coders-bingo');
+    const channel = pusher.subscribe(channelName);
     channel.bind('message', function (data: Message) {
-      alert(JSON.stringify(data));
-      setPusherMessages((prev) => [...prev, data]);
+      const { message, id } = data;
+      setPusherMessages((prev) => [...prev, { message, id }]);
     });
     return () => {
-      // if(pusher) pusher.disconnect()
+      if (pusher) pusher.unsubscribe(channelName);
     };
-  });
+  }, []);
 
   return (
     <main style={{ display: 'grid', placeContent: 'center', minHeight: '100vh' }}>
-      <div>{NEXT_PUBLIC_PUSHER_CLUSTER}</div>
-      <div>{NEXT_PUBLIC_PUSHER_KEY}</div>
       <section className="chat-box">
         <div className="pusherMessage">
           <ol>
@@ -71,8 +70,8 @@ const Home: NextPage = () => {
         </div>
         <form onSubmit={handleSubmit}>
           <input placeholder="write a message" onChange={handleInputChange} />
+          <button type="submit">Send Message</button>
         </form>
-        <button type="submit">Send Message</button>
       </section>
     </main>
   );
