@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Pusher from 'pusher-js';
 import * as PusherTypes from 'pusher-js';
 import genRandom from '../lib/randomId';
+import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
 
 export type Message = {
   message: string;
@@ -10,13 +11,13 @@ export type Message = {
 };
 
 const Home: NextPage = () => {
-  const pusher = new Pusher(`${process.env.PUSHER_KEY}`, {
-    cluster: process.env.PUSHER_CLUSTER,
+  const pusher = new Pusher(`${NEXT_PUBLIC_PUSHER_KEY}`, {
+    cluster: NEXT_PUBLIC_PUSHER_CLUSTER,
   });
   const [pusherMessages, setPusherMessages] = useState<Message[]>([]);
   const [formInput, setFormInput] = useState<Message>({ message: '', id: genRandom().makeid(20) });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>): Promise<void> => {
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
     console.log(formInput);
     const res = await fetch('/api/send-message', {
@@ -26,9 +27,9 @@ const Home: NextPage = () => {
       },
       body: JSON.stringify(formInput),
     });
-    const json = await res.json();
-    console.log(json);
-    return json;
+    // const json = await res.json();
+    console.log(res);
+    // return json;
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,6 +59,8 @@ const Home: NextPage = () => {
 
   return (
     <main style={{ display: 'grid', placeContent: 'center', minHeight: '100vh' }}>
+      <div>{NEXT_PUBLIC_PUSHER_CLUSTER}</div>
+      <div>{NEXT_PUBLIC_PUSHER_KEY}</div>
       <section className="chat-box">
         <div className="pusherMessage">
           <ol>
@@ -66,10 +69,10 @@ const Home: NextPage = () => {
             ))}
           </ol>
         </div>
-        <form>
+        <form onSubmit={handleSubmit}>
           <input placeholder="write a message" onChange={handleInputChange} />
         </form>
-        <button onSubmit={handleSubmit}>Send Message</button>
+        <button type="submit">Send Message</button>
       </section>
     </main>
   );
