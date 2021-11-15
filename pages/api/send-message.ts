@@ -2,16 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Pusher from 'pusher';
 import { Message } from '../index';
+import { PUSHER_APP_ID, PUSHER_CLUSTER, PUSHER_KEY, PUSHER_SECRET } from '../../lib/pusherKeys';
 
 type Data = {
   name: string;
 };
-
-// copy example
-const PUSHER_APP_ID = process.env.PUSHER_APP_ID as string;
-const PUSHER_KEY = process.env.PUSHER_KEY as string;
-const PUSHER_SECRET = process.env.PUSHER_SECRET as string;
-const PUSHER_CLUSTER = process.env.PUSHER_CLUSTER as string;
 
 const pusher = new Pusher({
   appId: PUSHER_APP_ID,
