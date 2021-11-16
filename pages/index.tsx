@@ -76,6 +76,8 @@ const Home: NextPage = () => {
         else return [{ ...data, relativeTime }];
       });
     });
+
+    setUserName(`randomGuest${Math.ceil(Math.random() * 1000)}`);
     return () => {
       if (pusher) pusher.unsubscribe(channelName);
     };
