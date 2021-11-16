@@ -10,15 +10,15 @@ type ChatMessageProps = {
 
 const ChatMessage = ({ pusherMessage, userName }: ChatMessageProps) => {
   const { message, userName: messageUserName, relativeTime } = pusherMessage;
-  const isUserSame = userName === messageUserName;
-  const listStyle = (a: string, b: string) => (isUserSame ? a : b);
+  const isUserSame = () => userName === messageUserName;
+  const listStyle = (a: string, b: string): string => (isUserSame() ? a : b);
   return (
     <ListItem textAlign={listStyle('left', 'right')}>
-      {isUserSame && <ListIcon as={CheckCircleIcon} color="green.500" />}
+      {isUserSame() && <ListIcon as={CheckCircleIcon} color="green.500" />}
       {messageUserName + ' '}
       {relativeTime + ' '}
       {message}
-      {!isUserSame && <ListIcon as={CheckCircleIcon} color="green.100" />}
+      {!isUserSame() && <ListIcon as={CheckCircleIcon} color="green.100" />}
     </ListItem>
   );
 };
