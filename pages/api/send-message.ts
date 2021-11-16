@@ -22,9 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 }
 
 const sendMessagePusher = async (req: NextApiRequest) => {
-  const { message, id }: Message = req.body;
-  const pushRes = await pusher.trigger(`${process.env.PUSHER_CHANNEL}`, 'message', { message, id }).catch((error) => {
-    console.log(error);
-  });
+  const { message, id, timeStamp, userName }: Message = req.body;
+  const pushRes = await pusher
+    .trigger(`${process.env.PUSHER_CHANNEL}`, 'message', { message, id, timeStamp, userName })
+    .catch((error) => {
+      console.log(error);
+    });
   return pushRes;
 };
