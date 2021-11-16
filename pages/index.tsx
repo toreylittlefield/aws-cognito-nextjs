@@ -5,6 +5,8 @@ import * as PusherTypes from 'pusher-js';
 import genRandom from '../lib/randomId';
 import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
 import { getRelativeTimeDate } from '../lib/relativeTime';
+import { Box, Button, Container, Flex, Input, OrderedList } from '@chakra-ui/react';
+import { ChatMessage } from '../Components/';
 
 export type Message = {
   message: string;
@@ -17,7 +19,7 @@ export type Message = {
 const Home: NextPage = () => {
   const [pusherMessages, setPusherMessages] = useState<Message[] | null>();
   const [formInput, setFormInput] = useState({ message: '' });
-  const [userName, setUserName] = useState<string>(`randomUser${Math.ceil(Math.random() + 1000)}`);
+  const [userName, setUserName] = useState<string>('');
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
@@ -80,26 +82,29 @@ const Home: NextPage = () => {
   }, []);
 
   return (
-    <main style={{ display: 'grid', placeContent: 'center', minHeight: '100vh' }}>
-      <section className="chat-box">
-        <div className="pusherMessage">
-          <ol>
+    <Flex minH="100vh" align="center" justify="center" bg="purple.600" color="gray.100">
+      <Container bg="blue.600" className="chat-box" minW="50%" p={5} borderRadius={25}>
+        <Box className="pusherMessage">
+          <OrderedList listStyleType="none" m={5} spacing={3}>
             {pusherMessages?.map((pusherMessage) => (
-              <li key={pusherMessage.id}>
-                <span>{pusherMessage.relativeTime + ''}</span>
-                <span>{pusherMessage.userName + ''}</span>
-                {pusherMessage.message}
-              </li>
+              <ChatMessage key={pusherMessage.id} pusherMessage={pusherMessage} userName={userName} />
             ))}
-          </ol>
-        </div>
+          </OrderedList>
+        </Box>
         <form onSubmit={handleSubmit}>
-          <input placeholder="write a message" onChange={handleInputChange} value={formInput.message} />
-          <button type="submit">Send Message</button>
+          <Input placeholder="write a message" onChange={handleInputChange} value={formInput.message} />
+          <Button
+            justifySelf="flex-end"
+            bg="green.300"
+            type="submit"
+            disabled={formInput.message.length === 0 || userName.length >= 10}
+          >
+            Send Message
+          </Button>
         </form>
-        <input placeholder="add a username" onChange={handleUserChange} value={userName} />
-      </section>
-    </main>
+        <Input placeholder="add a username" onChange={handleUserChange} value={userName} />
+      </Container>
+    </Flex>
   );
 };
 
