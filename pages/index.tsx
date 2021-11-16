@@ -4,39 +4,57 @@ import Pusher from 'pusher-js';
 import * as PusherTypes from 'pusher-js';
 import genRandom from '../lib/randomId';
 import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
+import { getRelativeTimeDate } from '../lib/relativeTime';
 
 export type Message = {
   message: string;
   id: string;
+  timeStamp: Date | number;
+  relativeTime?: string;
+  userName: string;
 };
 
 const Home: NextPage = () => {
-  const [pusherMessages, setPusherMessages] = useState<Message[]>([{ message: 'dummy', id: 'adsmdas11e2e1e3' }]);
-  const [formInput, setFormInput] = useState<Message>({ message: '', id: genRandom().makeid(20) });
+  const [pusherMessages, setPusherMessages] = useState<Message[] | null>();
+  const [formInput, setFormInput] = useState({ message: '' });
+  const [userName, setUserName] = useState<string>(`randomUser${Math.ceil(Math.random() + 1000)}`);
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
-    console.log(formInput);
+    const msgToSend: Message = {
+      id: genRandom().makeid(20),
+      message: formInput.message,
+      timeStamp: Date.now(),
+      userName: userName,
+    };
+
     const res = await fetch('/api/send-message', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formInput),
+      body: JSON.stringify(msgToSend),
     });
-    // const json = await res.json();
-    console.log(res);
-    // return json;
+    if (res.ok) {
+      console.log(res.ok);
+    }
+    setFormInput({ message: '' });
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setFormInput((prev) => {
+      const tmp = prev;
       return {
+        ...tmp,
         message: value,
-        id: prev.id,
       };
     });
+  };
+
+  const handleUserChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setUserName(value);
   };
 
   useEffect(() => {
@@ -50,8 +68,11 @@ const Home: NextPage = () => {
 
     const channel = pusher.subscribe(channelName);
     channel.bind('message', function (data: Message) {
-      const { message, id } = data;
-      setPusherMessages((prev) => [...prev, { message, id }]);
+      setPusherMessages((prev) => {
+        const relativeTime = getRelativeTimeDate(data.timeStamp);
+        if (Array.isArray(prev)) return [...prev, { ...data, relativeTime }];
+        else return [{ ...data, relativeTime }];
+      });
     });
     return () => {
       if (pusher) pusher.unsubscribe(channelName);
@@ -63,15 +84,20 @@ const Home: NextPage = () => {
       <section className="chat-box">
         <div className="pusherMessage">
           <ol>
-            {pusherMessages.map((message) => (
-              <li key={message.id}>{message.message}</li>
+            {pusherMessages?.map((pusherMessage) => (
+              <li key={pusherMessage.id}>
+                <span>{pusherMessage.relativeTime + ''}</span>
+                <span>{pusherMessage.userName + ''}</span>
+                {pusherMessage.message}
+              </li>
             ))}
           </ol>
         </div>
         <form onSubmit={handleSubmit}>
-          <input placeholder="write a message" onChange={handleInputChange} />
+          <input placeholder="write a message" onChange={handleInputChange} value={formInput.message} />
           <button type="submit">Send Message</button>
         </form>
+        <input placeholder="add a username" onChange={handleUserChange} value={userName} />
       </section>
     </main>
   );
