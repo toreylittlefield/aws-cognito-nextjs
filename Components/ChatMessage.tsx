@@ -13,7 +13,12 @@ const ChatMessage = ({ pusherMessage, userName }: ChatMessageProps) => {
   const isUserSame = userName === messageUserName;
   //   const listStyle = (a: string, b: string): string => (isUserSame ? a : b);
   return (
-    <ListItem textAlign={isUserSame ? 'left' : 'right'}>
+    <ListItem
+      textAlign={isUserSame ? 'left' : 'right'}
+      py={2}
+      borderRadius={5}
+      bg={isUserSame ? 'cyan.700' : 'purple.700'}
+    >
       {isUserSame && <ListIcon as={CheckCircleIcon} color="green.500" />}
       {messageUserName + ' '}
       {relativeTime + ' '}
