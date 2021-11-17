@@ -4,7 +4,6 @@ import Pusher from 'pusher-js';
 import * as PusherTypes from 'pusher-js';
 import genRandom from '../lib/randomId';
 import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
-import { getRelativeTimeDate } from '../lib/relativeTime';
 import { Box, Button, Container, Flex, Input, OrderedList } from '@chakra-ui/react';
 import { ChatMessage } from '../Components/';
 
@@ -79,32 +78,38 @@ const Home: NextPage = () => {
 
     setUserName(`randomGuest${Math.ceil(Math.random() * 1000)}`);
     return () => {
-      if (pusher) pusher.unsubscribe(channelName);
+      if (pusher) {
+        pusher.unsubscribe(channelName);
+        pusher.disconnect();
+      }
     };
   }, []);
 
   return (
-    <Flex minH="100vh" align="center" justify="center" bg="purple.600" color="gray.100">
-      <Container bg="blue.600" className="chat-box" minW="50%" p={5} borderRadius={25}>
-        <Box className="pusherMessage">
-          <OrderedList listStyleType="none" m={5} spacing={3}>
+    <Flex minH="100vh" align="center" justify="center" bg="purple.700" color="gray.100">
+      <Container bg="purple.500" className="chat-box" minW="50%" p={5} borderRadius={25}>
+        <Box className="pusherMessage" bg="gray.800" p={1} my={2} borderRadius={15}>
+          <OrderedList listStyleType="none" my={5} spacing={3}>
             {pusherMessages?.map((pusherMessage) => (
               <ChatMessage key={pusherMessage.id} pusherMessage={pusherMessage} userName={userName} />
             ))}
           </OrderedList>
         </Box>
-        <form onSubmit={handleSubmit}>
-          <Input placeholder="write a message" onChange={handleInputChange} value={formInput.message} />
-          <Button
-            justifySelf="flex-end"
-            bg="green.300"
-            type="submit"
-            disabled={formInput.message.length === 0 || userName.length >= 10}
-          >
-            Send Message
-          </Button>
-        </form>
-        <Input placeholder="add a username" onChange={handleUserChange} value={userName} />
+        <Flex direction="column">
+          <form onSubmit={handleSubmit}>
+            <Input my={2} placeholder="write a message" onChange={handleInputChange} value={formInput.message} />
+            <Button
+              my={2}
+              justifySelf="flex-end"
+              bg={formInput.message.length === 0 || userName.length >= 15 ? 'red.400' : 'green.400'}
+              type="submit"
+              disabled={formInput.message.length === 0 || userName.length >= 15}
+            >
+              Send Message
+            </Button>
+          </form>
+        </Flex>
+        <Input my={2} placeholder="add a username" onChange={handleUserChange} value={userName} />
       </Container>
     </Flex>
   );
