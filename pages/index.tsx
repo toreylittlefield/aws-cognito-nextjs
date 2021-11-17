@@ -5,7 +5,7 @@ import * as PusherTypes from 'pusher-js';
 import genRandom from '../lib/randomId';
 import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
 import { Box, Button, Container, Flex, Input, OrderedList } from '@chakra-ui/react';
-import { ChatMessage } from '../Components/';
+import { ChatMessage, UserNameInput } from '../Components/';
 import { getRelativeTimeDate } from '../lib/relativeTime';
 
 export type Message = {
@@ -77,7 +77,7 @@ const Home: NextPage = () => {
       });
     });
 
-    setUserName(`randomGuest${Math.ceil(Math.random() * 1000)}`);
+    setUserName(`randomGuest${Math.ceil(Math.random() * 1000)}⚡️`);
     return () => {
       if (pusher) {
         pusher.unsubscribe(channelName);
@@ -110,7 +110,8 @@ const Home: NextPage = () => {
             </Button>
           </form>
         </Flex>
-        <Input my={2} placeholder="add a username" onChange={handleUserChange} value={userName} />
+        <UserNameInput userName={userName} handleUserChange={handleUserChange} />
+        {/* <Input my={2} placeholder="add a username" onChange={handleUserChange} value={userName} /> */}
       </Container>
     </Flex>
   );
