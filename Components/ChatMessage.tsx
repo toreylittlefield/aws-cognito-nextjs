@@ -20,8 +20,8 @@ const ChatMessage = ({ pusherMessage, userName }: ChatMessageProps) => {
       bg={isUserSame ? 'cyan.700' : 'purple.700'}
     >
       {isUserSame && <ListIcon as={CheckCircleIcon} color="green.500" />}
-      {messageUserName + ' '}
       {relativeTime + ' '}
+      {messageUserName + ' '}
       {message}
       {!isUserSame && <ListIcon as={CheckCircleIcon} color="green.100" />}
     </ListItem>
