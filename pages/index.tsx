@@ -6,6 +6,7 @@ import genRandom from '../lib/randomId';
 import { NEXT_PUBLIC_PUSHER_CLUSTER, NEXT_PUBLIC_PUSHER_KEY } from '../lib/pusherKeys';
 import { Box, Button, Container, Flex, Input, OrderedList } from '@chakra-ui/react';
 import { ChatMessage } from '../Components/';
+import { getRelativeTimeDate } from '../lib/relativeTime';
 
 export type Message = {
   message: string;
